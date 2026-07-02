@@ -1,0 +1,22 @@
+# Dependencies
+backend/node_modules
+frontend/node_modules
+
+# Environment variables
+backend/.env
+frontend/.env
+
+# Uploads (user files)
+backend/src/uploads/*
+!backend/src/uploads/doctors/.gitkeep
+!backend/src/uploads/patients/.gitkeep
+!backend/src/uploads/profiles/.gitkeep
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
