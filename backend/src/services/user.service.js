@@ -27,7 +27,7 @@ export const updateUser = async (id, updateData)=>{
     if(!user){
         throw new Error("user not found");
     }
-    return await userRepo.updateUser(id,updateDate);
+    return await userRepo.updateUser(id,updateData);
 }
 
 // delete user

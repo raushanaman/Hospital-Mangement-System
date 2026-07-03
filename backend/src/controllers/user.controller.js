@@ -4,7 +4,7 @@ import * as userService from  "../services/user.service.js";
 
 export const getAllUsers = async (req,res)=>{
     try {
-        const user = await userService.getAllUsers();
+        const users = await userService.getAllUsers();
 
         res.status(200).json({
             success: true,
@@ -52,7 +52,7 @@ export const updateUser = async (req, res)=>{
         res.status(200).json({
             success: true,
             message:"User Updated Successfully",
-            data: updateUser
+            data: user
         })
     } catch (error) {
         res.status(500).json({

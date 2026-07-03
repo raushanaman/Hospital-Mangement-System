@@ -18,7 +18,7 @@ export const findUserById = async (id)=>{
 export const updateUser = async (id, userData)=>{
     return await User.findByIdAndUpdate(
         id,
-        updateDate,
+        updateData,
         {
             new: true,
             runValidators: true,
