@@ -59,6 +59,8 @@ export const updateDoctor = async(id, updateData)=>{
         throw new Error("Doctor not found");
 
     }
+     delete updateData.licenseNumber;
+     delete updateData.user;
     return await doctorRepo.updateDoctor(id,updateData);
 }
 
