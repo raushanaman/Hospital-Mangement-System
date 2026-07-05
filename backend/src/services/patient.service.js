@@ -44,10 +44,34 @@ export const updatePateintByAdmin = async(patientId, updateData)=>{
     if(!patient){
         throw new Error("patient not found");
     }
+
+     // Allowed fields only
+    const allowedFields = [
+        "dateOfBirth",
+        "gender",
+        "bloodGroup",
+        "height",
+        "weight",
+        "address",
+        "emergencyContact",
+        "allergies",
+        "medicalHistory"
+    ];
+
+    // Filter request body
+    const filteredData = {};
+
+    for (const field of allowedFields) {
+
+        if (updateData[field] !== undefined) {
+            filteredData[field] = updateData[field];
+        }
+
+    }
     return await patientRepo.updatePatient(
         patientId,
-        updateData
-    )
+        filteredData
+    );
 };
 
 // delete patient
