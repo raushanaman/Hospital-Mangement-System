@@ -3,8 +3,8 @@ import * as patientService from "../services/patient.service.js";
 // create patient
 
 export const createPatient = async (req, res)=>{
-    const paitent = await patientService.createNewPatient(req.body);
     try {
+        const patient = await patientService.createNewPatient(req.body);
         
         return res.status(201).json({
             success: true,
@@ -22,8 +22,8 @@ export const createPatient = async (req, res)=>{
 // get all patients
 
 export const getAllPatients = async (req, res)=>{
-    const patient = await patientService.getAllPatients()
     try {
+        const patient = await patientService.getAllPatients()
         return res.status(200).json({
             success: true,
             count: patient.length,
@@ -128,7 +128,7 @@ export const updatedProfile = async (req, res)=>{
         return res.status(200).json({
             success: true,
             message: "Profile updated successfully",
-            data: patient
+            data: updateProfileByUser
         });
     } catch (error) {
 

@@ -1,4 +1,4 @@
-import User from "../models/user.model.js";
+import User from "../models/user.js";
 
 import * as patientRepo from "../repositories/patient.repository.js";
 
@@ -16,7 +16,7 @@ export const createNewPatient = async (patientData)=>{
 
    //check duplicate patient profile
 
-   const existingPatient = await patientRepo.findPatientByUserId(patientData.user);
+   const existingPatient = await patientRepo.getPatientByUserId(patientData.user);
 
    if(existingPatient){
      throw new Error("Patient profile already exist for this user");
@@ -27,10 +27,22 @@ export const createNewPatient = async (patientData)=>{
 
 // get all patients
 
-export const getAllPatients = async (patientId)=>{
-    const patient = await patientRepo.getPatientById(patientId);
+export const getAllPatients = async ()=>{
+    const patient = await patientRepo.getAllPatient();
 
     if(!patient){
+        throw new Error("patient not found");
+    }
+    return patient;
+}
+
+
+//get patient by id
+
+
+export const getAllPatientByAdmin = async (patientId) => {
+    const patient = await patientRepo.getPatientById(patientId);
+    if (!patient) {
         throw new Error("patient not found");
     }
     return patient;
@@ -99,7 +111,7 @@ export const getMyProfile = async (userId)=>{
 }
 
 export const updateMyProfile = async(userId, updateData)=>{
-        const patient =  await patientRepo.findPatientByUserId(userId);
+        const patient =  await patientRepo.updatePatientByUserId(userId);
 
         if(!patient){
             throw new Error("patient profile not found");

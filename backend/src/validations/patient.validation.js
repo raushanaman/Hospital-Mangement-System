@@ -18,7 +18,7 @@ export const createPatientValidation = [
     body("gender")
     .notEmpty()
     .withMessage("Gender is required")
-    .isIn(["Male", "Female", "Other"])
+    .isIn(["male", "female", "other"])
     .withMessage("Invalid gender"),
 
     body("bloodGroup")
@@ -73,7 +73,7 @@ export const updatePatientValidation = [
 
     body("gender")
         .optional()
-        .isIn(["Male", "Female", "Other"])
+        .isIn(["male", "female", "other"])
         .withMessage("Invalid gender"),
 
     body("bloodGroup")
