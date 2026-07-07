@@ -10,7 +10,7 @@ export const createReceptionist = async (receptionistData)=>{
     // check user exist or not
 
     if(!user){
-        throw new error("user not found");
+        throw new Error("user not found");
     }
     // check role
     if(user.role !== "receptionist"){
@@ -70,7 +70,7 @@ export const updateReceptionist = async(
 
     Object.keys(updateData).forEach((key)=>{
 
-        if(allowedFields.includes(keys)){
+        if(allowedFields.includes(key)){
             filteredData[key]= updateData[key];
         }
 
@@ -83,7 +83,7 @@ export const updateReceptionist = async(
 // delete receptionist 
 
 export const deleteReceptionist = async (
-    receptioistId 
+    receptionistId 
 )=>{
     const receptionist = await receptionRepo.getReceptionistById(receptionistId);
 

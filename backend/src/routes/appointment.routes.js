@@ -13,6 +13,7 @@ import {
 
 
 import Protection from "../middleware/auth.middleware.js";
+import authorize from "../middleware/authorize.middleware.js";
 
 import {
     createAppointmentValidation,
@@ -57,7 +58,7 @@ Get My Appointments
 
 router.get("/my",
     Protection,
-    authorize("doctor", patient),
+    authorize("doctor", "patient"),
     getMyAppointment
 );
 
@@ -104,7 +105,7 @@ Delete Appointment
 */
 router.delete(
     "/:id",
-    protect,
+    Protection,
     authorize("admin"),
     appointmentIdValidation,
     validate,

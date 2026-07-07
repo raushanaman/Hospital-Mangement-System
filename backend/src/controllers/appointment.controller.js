@@ -3,7 +3,7 @@ import  * as appointService from "../services/appointment.service.js";
 
 // create appointment
 
-export  const createAppointment = (req,res)=>{
+export  const createAppointment = async (req,res)=>{
     try {
         const appointment = await appointService.createAppointment(req.body);
         res.status(201).json({

@@ -4,7 +4,7 @@ import * as receptionService from "../services/receptionist.service.js";
 
 export const createReceptionist =async (req, res) =>{
     try {
-        const receptionist = receptionService.createReceptionist(req.body);
+        const receptionist = await receptionService.createReceptionist(req.body);
 
         res.status(201).json({
             success: true,

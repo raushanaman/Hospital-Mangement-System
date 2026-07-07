@@ -93,6 +93,7 @@ export const  updateAppointmentValidation = [
 
 export const updateAppointmentStatusValidation = [
     body("status")
+    .notEmpty()
     .withMessage("Status is required")
     .isIn([
         "pending",

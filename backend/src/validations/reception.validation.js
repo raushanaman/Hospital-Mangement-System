@@ -14,7 +14,7 @@ export const createReceptionValidation = [
     body("employeeId")
         .notEmpty()
         .withMessage("Phone number is required")
-        .matches(/^[0-9]{10}$/)
+        .isLength({ min: 5, max: 200 })
         .withMessage("phone number exactly contain 10 digits"),
 
     body("shift")
