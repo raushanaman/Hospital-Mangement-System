@@ -1,4 +1,4 @@
-import Appointment from "../models/appointemnt.model.js";
+import Appointment from "../models/appointment.model.js";
 
 // create appointment
 

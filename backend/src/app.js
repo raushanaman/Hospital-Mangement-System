@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.routes.js"
 import userRoutes from "./routes/user.routes.js"
 import doctorRoutes from "./routes/doctor.routes.js"
 import patientRoutes from "./routes/patient.routes.js"
+import appointmentRoutes from "./routes/appointment.routes.js"
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes);
 app.use("/api/doctors",doctorRoutes)
 app.use("/api/patient", patientRoutes)
+app.use("/api/appointments", appointmentRoutes)
 
 app.get("/", (req, res) => {
     res.status(200).json({
