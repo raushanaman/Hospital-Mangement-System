@@ -5,7 +5,7 @@ import  * as appointService from "../services/appointment.service.js";
 
 export  const createAppointment = async (req,res)=>{
     try {
-        const appointment = await appointService.createAppointment(req.body);
+        const appointment = await appointService.createAppointment({...req.body, createdBy: req.user._id});
         res.status(201).json({
             success:true,
             message:"Appointment created successfully",
@@ -127,8 +127,8 @@ export const getMyAppointment = async(req,res)=>{
 
         res.status(200).json({
             success: true,
-            count: appointments.length,
-            data: appointments,
+            count: appointment.length,
+            data: appointment,
         });
     } catch (error) {
 

@@ -47,7 +47,7 @@ Get All Appointments
 
 router.get("/",
     Protection,
-    authorize("admin","recptionist"),
+    authorize("admin","receptionist"),
     getAllAppointments
 );
 
@@ -82,7 +82,11 @@ Update Appointment
 
 router.put("/:id",
     Protection,
-    authorize("admin", "receptionist")
+    authorize("admin", "receptionist"),
+    appointmentIdValidation,
+    updateAppointmentValidation,
+    validate,
+    updateAppointment
 );
 
 /*

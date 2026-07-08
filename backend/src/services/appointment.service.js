@@ -2,6 +2,8 @@ import * as appointRepo from "../repositories/appointment.repository.js";
 import * as doctorRepo from "../repositories/doctor.repository.js";
 import * as patientRepo from "../repositories/patient.repository.js";
 
+
+// helper  function for duration validation
 // create appointment
 
 export const createAppointment = async (appointmentData) => {
@@ -112,7 +114,7 @@ export const updateAppointmentStatus = async(
     appointmentId,
     status
 )=>{
-    const appointment = await appointment.getAppointmentById(appointmentId);
+    const appointment = await appointRepo.getAppointmentById(appointmentId);
 
     if(!appointment){
         throw new Error("Appointment not found");
@@ -136,7 +138,7 @@ export const getPatientAppointment = async(patientId)=>{
 
 // extracting doctor id from doctor repo
 
-export const getMyAppointment = async(user)=>{
+export const getMyAppointments = async(user)=>{
     //logged in doctor
 
     if(user.role ==="doctor"){
@@ -150,7 +152,7 @@ export const getMyAppointment = async(user)=>{
         const patient = await patientRepo.getPatientByUserId(user._id);
 
         if(!patient){
-            throw new error("patient not found");
+            throw new Error("patient not found");
         }
 
         return await appointRepo.getAllAppointment({patient: patient._id})
