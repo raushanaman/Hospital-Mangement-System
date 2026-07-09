@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const appointmentSchema = new mongoose.Schema(
     {
-        doctor:{
+        doctor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Doctor",
             required: [true, "Doctor is required"],
         },
 
-        patient:{
+        patient: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Patient",
             required: [true, "patient is required"],
@@ -16,7 +16,7 @@ const appointmentSchema = new mongoose.Schema(
 
         appointmentDate: {
             type: Date,
-            requrired: [true,"Appointment date is required"],
+            requrired: [true, "Appointment date is required"],
         },
 
         startTime: {
@@ -28,28 +28,32 @@ const appointmentSchema = new mongoose.Schema(
             required: [true, "End time is required"],
         },
 
-        status:{
+        status: {
             type: String,
-            enum:["pending","confirmed","completed","cancelled"],
-            default:"pending"
+            enum: ["pending", "confirmed", "completed", "cancelled"],
+            default: "pending"
         },
 
-        reason:{
+        reason: {
             type: String,
             required: [true, "Reason is required"],
             trim: true,
         },
 
-        notes:{
+        notes: {
             type: String,
             trim: true,
-            default:"",
+            default: "",
         },
 
-        consultationFee:{
+        consultationFee: {
             type: Number,
-            default:0,
+            default: 0,
             min: 0,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         },
 
         createdBy: {
@@ -64,6 +68,17 @@ const appointmentSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+appointmentSchema.index({
+    doctor: 1,
+    appointmentDate: 1
+});
+appointmentSchema.index({
+    patient: 1
+})
+appointmentSchema.index({
+    status: 1
+})
 
 const Appointment = mongoose.model("Appointment", appointmentSchema);
 

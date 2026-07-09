@@ -153,6 +153,16 @@ export const updateDoctorProfileValidation = [
         .isBoolean()
         .withMessage("Availability must be true or false"),
 
+        body("startTime")
+        .optional()
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+        .withMessage("Start time must be in HH:mm format"),
+
+    body("endTime")
+        .optional()
+        .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+        .withMessage("End time must be in HH:mm format"),
+
     body("workingDays")
         .optional()
         .isArray({ min: 1 })

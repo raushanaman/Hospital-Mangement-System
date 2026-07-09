@@ -8,8 +8,20 @@ export const createAppointment =async (appointmentData)=>{
 
 // get all appointments
 
-export const getAllAppointment = async (filter = {})=>{
-    return await Appointment.find(filter)
+export const getAllAppointment = async (filter = {},
+    page = 1,
+    limit = 10,
+    sort = "latest"
+)=>{
+
+    const skip =(Number(page-1))*limit;
+    const sortOption = sort=== "oldest"?{createdAt: 1}:{createdAt: -1};
+    return await Appointment.find({...filter,
+        isDeleted: false}
+    )
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit)
     .populate("doctor")
     .populate("patient")
     .populate("createdBy","-password");
@@ -18,7 +30,9 @@ export const getAllAppointment = async (filter = {})=>{
 // get appointment by id
 
 export const getAppointmentById = async (appointmentId)=>{
-    return await Appointment.findById(appointmentId)
+    return await Appointment.findOne({_id: appointmentId, 
+        isDeleted: false
+    })
     .populate("doctor")
     .populate("patient")
     .populate("createdBy", "-password");
@@ -46,7 +60,10 @@ export const updateAppointment =async (appointmentId, updateData)=>{
 // delete appointment
 
 export const deleteAppointment = async (appointmentId)=>{
-    return await Appointment.findByIdAndDelete(appointmentId);
+    return await Appointment.findByIdAndUpdate(appointmentId,
+        {isDeleted: true},
+        {new: true}
+    );
 };
 
 /**
@@ -69,4 +86,47 @@ export const findDoctorAppointmentBySlot = async (
             $ne: "cancelled",
         }
     });
+}
+
+// find appointment by date
+
+export const findDoctorAppointmentByDate = async(
+    doctorId,
+    appointmentDate)=>{
+        return await Appointment.find({
+            doctor: doctorId,
+            appointmentDate
+        });
+    }
+
+// search doctor and patient by name
+
+export const searchAppointment = async (
+    filter = {},
+    page = 1,
+    limit = 10,
+    sort = "latest"
+) => {
+    const skip = (page - 1) * limit;
+    const sortOption = sort === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
+
+    return await Appointment.find({
+        ...filter,
+        isDeleted: false
+    }).sort(sortOption)
+    .skip(skip)
+    .limit(limit)
+    .populate({
+        path: "doctor",
+        populate: {
+            path: "user",
+            select: "firstName lastName email"
+        }
+    }).populate({
+        path: "patient",
+        populate: {
+            path: "user",
+            select: "firstName lastName email"
+        }
+    }).populate("createdBy", "-password");
 }

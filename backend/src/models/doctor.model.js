@@ -51,10 +51,12 @@ const doctorSchema = new mongoose.Schema(
 
         startTime:{
             type:String,
+            default: "09:00"
 
         },
         endTime:{
             type: String,
+            default: "18:00"
         },
     },
     {

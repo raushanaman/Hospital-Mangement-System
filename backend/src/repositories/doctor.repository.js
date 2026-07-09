@@ -1,4 +1,5 @@
 import Doctor from "../models/doctor.model.js";
+import User from "../models/user.js";
 
 // create doctor
 
@@ -57,4 +58,21 @@ export const deleteDoctor = async (id)=>{
 export const findDoctorByUserId = async (userId)=>{
     return await Doctor.findOne({user: userId})
     .populate("user", "firstName lastName email phone");
+}
+
+// search doctor by name with appointments
+
+export const searchDoctorByName = async (name) => {
+    const users = await User.find({
+        $or: [
+            { firstName: { $regex: name, $options: "i" } },
+            { lastName: { $regex: name, $options: "i" } }
+        ],
+        role: "doctor"
+    }).select("_id");
+
+    const userIds = users.map(u => u._id);
+
+    return await Doctor.find({ user: { $in: userIds } })
+        .populate("user", "firstName lastName email phone");
 }

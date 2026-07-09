@@ -7,7 +7,8 @@ import {
     getMyProfile,
     updateMyProfile,
     updateDoctor,
-    deleteDoctor
+    deleteDoctor,
+    searchDoctorByName
 } from "../controllers/doctor.controller.js"
 
 import Protection from "../middleware/auth.middleware.js";
@@ -34,6 +35,13 @@ router.post(
     createDoctorValidation,
     validate,
     createDoctor
+);
+
+// search doctor by name
+
+router.get("/search",
+    authorize("admin", "receptionist"),
+    searchDoctorByName
 );
 
 // GET ALL doctors

@@ -1,5 +1,5 @@
 import * as doctorRepo from "../repositories/doctor.repository.js";
-
+import * as appointRepo from "../repositories/appointment.repository.js";
 import User from "../models/user.js";
 
 // create doctor
@@ -90,6 +90,24 @@ export const getMyProfile = async (userId)=>{
     return doctor;
 }
 
+// search doctor by name with appointments
+
+export const searchDoctorByName = async (name) => {
+    if (!name) throw new Error("Name is required for search");
+
+    const doctors = await doctorRepo.searchDoctorByName(name);
+
+    if (!doctors.length) throw new Error("No doctor found with this name");
+
+    const result = await Promise.all(
+        doctors.map(async (doctor) => {
+            const appointments = await appointRepo.getAllAppointment({ doctor: doctor._id });
+            return { doctor, appointments };
+        })
+    );
+    return result;
+}
+
 // update doctor profile
 
 export const updateMyProfile = async (userId, updateData) =>{
@@ -99,16 +117,14 @@ export const updateMyProfile = async (userId, updateData) =>{
         throw new Error("Doctor not found");
     }
 
-    // allowed fields only
-
     const allowedFields = ["specialization","experience","consultationFee","availability", "workingDays"];
 
-    const updateData1 = {};
+    const filteredData = {};
 
     allowedFields.forEach((field)=>{
-        if(data[field] !== undefined){
-            updateData1[field]= data[field];
+        if(updateData[field] !== undefined){
+            filteredData[field] = updateData[field];
         }
     });
-    return await doctorRepo.updateDoctorbyUserId(userId, updateData);
+    return await doctorRepo.updateDoctorbyUserId(userId, filteredData);
 }
