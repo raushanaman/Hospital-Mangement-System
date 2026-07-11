@@ -1,7 +1,7 @@
 import express from "express";
 
 // import helmet from "helmet";
-// import cors from "cors";
+import cors from "cors";
 // import morgan from "morgan";
 // import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js"
@@ -17,7 +17,11 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-// app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
 // app.use(helmet());
 // app.use(morgan("dev"));
 
