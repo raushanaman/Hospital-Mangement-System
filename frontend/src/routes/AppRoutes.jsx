@@ -22,21 +22,27 @@ const AppRoutes = () => {
 
             <Route path="/doctors"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute
+                    allowedRoles ={["admin"]}
+                    >
                         <Doctors />
                     </ProtectedRoute>} />
 
 
             <Route path="/patients"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute
+                    allowedRoles={["admin","receptionist"]}
+                    >
                         <Patients />
                     </ProtectedRoute>} />
 
 
             <Route path="/appointments"
                 element={
-                    <ProtectedRoute>
+                    <ProtectedRoute
+                    allowedRoles={["admin", "doctor", "patient", "receptionist"]}
+                    >
                         <Appointments />
                     </ProtectedRoute>} />
 
