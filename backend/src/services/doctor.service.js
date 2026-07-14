@@ -53,7 +53,7 @@ export const getDoctorById = async(id)=>{
 //update doctor
 
 export const updateDoctor = async(id, updateData)=>{
-    const doctor = await doctorRepo.updateDoctor(id);
+    const doctor = await doctorRepo.getDoctorById(id);
 
     if(!doctor){
         throw new Error("Doctor not found");
@@ -67,7 +67,7 @@ export const updateDoctor = async(id, updateData)=>{
 // delete doctor
 
 export const deleteDoctor = async(id)=>{
-    const doctor = await doctorRepo.findDoctorByUserId(id);
+    const doctor = await doctorRepo.getDoctorById(id);
 
     if(!doctor){
         throw new Error("Doctor not found");
@@ -82,7 +82,7 @@ export const deleteDoctor = async(id)=>{
 // see doctor profile
 
 export const getMyProfile = async (userId)=>{
-    const doctor = await doctorRepo.getDoctorById(userId)
+    const doctor = await doctorRepo.findDoctorByUserId(userId)
     if(!doctor){
         throw new Error("Doctor not exist");
     }
@@ -117,7 +117,7 @@ export const updateMyProfile = async (userId, updateData) =>{
         throw new Error("Doctor not found");
     }
 
-    const allowedFields = ["specialization","experience","consultationFee","availability", "workingDays"];
+    const allowedFields = ["specialization","experience","consultationFee","availability", "workingDays", "department", "startTime", "endTime"];
 
     const filteredData = {};
 

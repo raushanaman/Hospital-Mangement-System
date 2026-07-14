@@ -44,51 +44,20 @@ router.get("/search",
     searchDoctorByName
 );
 
-// GET ALL doctors
+// Logged-in Doctor — must be BEFORE /:id
+router.get("/me", authorize("doctor"), getMyProfile);
+router.put("/me", authorize("doctor"), updateDoctorProfileValidation, validate, updateMyProfile);
 
+// GET ALL doctors
 router.get("/", authorize("admin"), getAllDoctors);
 
 // get doctor by id
+router.get("/:id", authorize("admin"), doctorIdValidation, validate, getDoctorById);
 
-router.get("/:id",
-    authorize("admin"),
-    doctorIdValidation,
-    validate,
-    getDoctorById
-);
-
-//update doctor
-
-router.put("/:id",
-    authorize("admin"),
-    updateDoctorValidation,
-    validate,
-    updateDoctor
-);
+// update doctor
+router.put("/:id", authorize("admin"), updateDoctorValidation, validate, updateDoctor);
 
 // delete doctor
-
-router.delete("/:id",
-    authorize("admin"),
-    doctorIdValidation,
-    validate,
-    deleteDoctor
-);
-
-// Logged-in Doctor
-
-router.get(
-    "/me",
-    authorize("doctor"),
-    getMyProfile
-);
-
-router.put(
-    "/me",
-    authorize("doctor"),
-    updateDoctorProfileValidation,
-    validate,
-    updateMyProfile
-);
+router.delete("/:id", authorize("admin"), doctorIdValidation, validate, deleteDoctor);
 
 export default router;
