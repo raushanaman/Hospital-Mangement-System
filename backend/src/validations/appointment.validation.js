@@ -42,8 +42,7 @@ export const createAppointmentValidation = [
         .withMessage("Start time must be in HH:mm format"),
 
     body("endTime")
-        .notEmpty()
-        .withMessage("End time is required")
+        .optional()
         .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
         .withMessage("End time must be in HH:mm format"),
 

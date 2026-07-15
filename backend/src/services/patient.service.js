@@ -1,28 +1,31 @@
 import User from "../models/user.js";
-
+import * as authRepo from "../repositories/auth.repository.js";
 import * as patientRepo from "../repositories/patient.repository.js";
 
 // create new patient
 
-export const createNewPatient = async (patientData)=>{
+export const createNewPatient = async (patientData) => {
     const user = await User.findById(patientData.user);
 
-    if(!user){
+    if (!user) {
         throw new Error("User not found");
     }
-   if(user.role !== "patient"){
-    throw new Error("selected user is not patient");
-   }
+    if (user.role !== "patient") {
+        throw new Error("selected user is not patient");
+    }
 
-   //check duplicate patient profile
+    const existingPatient = await patientRepo.getPatientByUserId(patientData.user);
+    if (existingPatient) {
+        throw new Error("Patient profile already exist for this user");
+    }
 
-   const existingPatient = await patientRepo.getPatientByUserId(patientData.user);
-
-   if(existingPatient){
-     throw new Error("Patient profile already exist for this user");
-   }
-
-   return await patientRepo.createPatient(patientData);
+    try {
+        return await patientRepo.createPatient(patientData);
+    } catch (error) {
+        // rollback: delete the user if patient profile creation fails
+        await authRepo.deleteUserById(patientData.user);
+        throw error;
+    }
 };
 
 // get all patients

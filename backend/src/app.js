@@ -30,7 +30,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes);
 app.use("/api/doctors",doctorRoutes)
-app.use("/api/patient", patientRoutes)
+app.use("/api/patients", patientRoutes)
 app.use("/api/appointments", appointmentRoutes)
 app.use("/api/receptionist", receptionistRoutes)
 

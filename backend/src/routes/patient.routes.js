@@ -40,7 +40,7 @@ router.put(
 
 router.post(
     "/",
-    authorize("admin"),
+    authorize("admin", "receptionist"),
     createPatientValidation,
     validate,
     patientController.createPatient

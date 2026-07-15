@@ -15,3 +15,7 @@ export const findUserById = async (id)=>{
 export const findUserForLogin = async (email)=>{
     return await User.findOne({email}).select("+password");
 }
+
+export const deleteUserById = async (id) => {
+    return await User.findByIdAndDelete(id);
+}

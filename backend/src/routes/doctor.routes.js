@@ -49,10 +49,10 @@ router.get("/me", authorize("doctor"), getMyProfile);
 router.put("/me", authorize("doctor"), updateDoctorProfileValidation, validate, updateMyProfile);
 
 // GET ALL doctors
-router.get("/", authorize("admin"), getAllDoctors);
+router.get("/", authorize("admin", "patient", "receptionist"), getAllDoctors);
 
 // get doctor by id
-router.get("/:id", authorize("admin"), doctorIdValidation, validate, getDoctorById);
+router.get("/:id", authorize("admin","patient", "receptionist"), doctorIdValidation, validate, getDoctorById);
 
 // update doctor
 router.put("/:id", authorize("admin"), updateDoctorValidation, validate, updateDoctor);

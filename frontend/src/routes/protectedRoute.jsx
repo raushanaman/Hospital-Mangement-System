@@ -7,8 +7,10 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
     if (!token) return <Navigate to="/" />;
 
-    if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role))
-        return <Navigate to={user?.role === "doctor" ? "/doctor/dashboard" : "/dashboard"} />;
+    if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+        const redirectMap = { admin: "/dashboard", receptionist: "/dashboard", doctor: "/doctor/dashboard", patient: "/patient/dashboard" };
+        return <Navigate to={redirectMap[user?.role] || "/"} />;
+    }
 
     return children;
 };

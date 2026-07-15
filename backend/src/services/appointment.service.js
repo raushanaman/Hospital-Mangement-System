@@ -17,17 +17,30 @@ export const createAppointment = async (appointmentData) => {
         patient,
         appointmentDate,
         startTime,
-        endTime,
     } = appointmentData;
 
 
     const doctorExist = await doctorRepo.getDoctorById(doctor);
+
+    if (!doctorExist) {
+        throw new Error("Doctor not found");
+    }
+
+    // if endTime not provided, use doctor's endTime as default
+    const endTime = appointmentData.endTime || doctorExist.endTime;
+    appointmentData.endTime = endTime;
 
     const startMinutes = convertTimeToMinutes(startTime);
     const endMinutes = convertTimeToMinutes(endTime);
 
     if (!doctorExist) {
         throw new Error("Doctor not found");
+    }
+
+    // check doctor availability on that day
+    const appointmentDay = new Date(appointmentDate).toLocaleDateString("en-US", { weekday: "long" });
+    if (!doctorExist.workingDays.includes(appointmentDay)) {
+        throw new Error(`Doctor is not available on ${appointmentDay}`);
     }
 
     const doctorStartMinutes = convertTimeToMinutes(doctorExist.startTime);
@@ -61,7 +74,7 @@ export const createAppointment = async (appointmentData) => {
     appointmentDate
    );
    for(const appointment of existingAppointments){
-    const existingStart = convertTimeToMinutes(appointment.startMinutes);
+    const existingStart = convertTimeToMinutes(appointment.startTime);
     const existingEnd = convertTimeToMinutes(appointment.endTime);
 
     if(startMinutes < existingEnd && endMinutes > existingStart){
