@@ -7,7 +7,7 @@ export const userIdValidation = [
     .withMessage("Invalid user ID")
 ]
 
-// UPDATE uSER validation
+// UPDATE USER validation
 
 export const updateUserValidation = [
     param("id")
