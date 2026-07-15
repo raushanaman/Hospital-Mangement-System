@@ -22,9 +22,9 @@ export const getAllAppointment = async (filter = {},
     .sort(sortOption)
     .skip(skip)
     .limit(limit)
-    .populate("doctor")
-    .populate("patient")
-    .populate("createdBy","-password");
+    .populate({ path: "doctor", populate: { path: "user", select: "firstName lastName email" } })
+    .populate({ path: "patient", populate: { path: "user", select: "firstName lastName email" } })
+    .populate("createdBy", "-password");
 };
 
 // get appointment by id

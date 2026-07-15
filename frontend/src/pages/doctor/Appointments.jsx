@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
-import { getAppointments } from "../../services/appointmentService";
+import { getMyAppointments, updateAppointmentStatus } from "../../services/appointmentService";
 
 const STATUS_STYLES = {
     scheduled: "bg-blue-100 text-blue-700",
     completed: "bg-green-100 text-green-700",
     cancelled: "bg-red-100 text-red-700",
     pending: "bg-yellow-100 text-yellow-700",
+    confirmed: "bg-indigo-100 text-indigo-700",
+};
+
+const ALLOWED_TRANSITIONS = {
+    pending: ["confirmed", "cancelled"],
+    confirmed: ["completed", "cancelled"],
+    cancelled: [],
+    completed: [],
 };
 
 const DoctorAppointments = () => {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [updatingId, setUpdatingId] = useState(null);
 
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await getAppointments();
+                const res = await getMyAppointments();
                 setAppointments(res.data.data || []);
             } catch (err) {
                 setError(err.response?.data?.message || "Failed to load appointments");
@@ -26,6 +35,20 @@ const DoctorAppointments = () => {
         };
         load();
     }, []);
+
+    const handleStatusChange = async (apptId, newStatus) => {
+        setUpdatingId(apptId);
+        try {
+            await updateAppointmentStatus(apptId, newStatus);
+            setAppointments((prev) =>
+                prev.map((a) => (a._id === apptId ? { ...a, status: newStatus } : a))
+            );
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to update status");
+        } finally {
+            setUpdatingId(null);
+        }
+    };
 
     return (
         <div>
@@ -53,6 +76,7 @@ const DoctorAppointments = () => {
                                     <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time</th>
                                     <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Reason</th>
                                     <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -74,9 +98,9 @@ const DoctorAppointments = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
-                                            {new Date(appt.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                                            {new Date(appt.appointmentDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{appt.time || "—"}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">{appt.startTime} – {appt.endTime}</td>
                                         <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] truncate">{appt.reason || "—"}</td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
@@ -84,6 +108,23 @@ const DoctorAppointments = () => {
                                             }`}>
                                                 {appt.status || "unknown"}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {ALLOWED_TRANSITIONS[appt.status]?.length > 0 ? (
+                                                <select
+                                                    disabled={updatingId === appt._id}
+                                                    onChange={(e) => handleStatusChange(appt._id, e.target.value)}
+                                                    defaultValue=""
+                                                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 disabled:opacity-50"
+                                                >
+                                                    <option value="" disabled>Change</option>
+                                                    {ALLOWED_TRANSITIONS[appt.status].map((s) => (
+                                                        <option key={s} value={s}>{s}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <span className="text-xs text-gray-400">—</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

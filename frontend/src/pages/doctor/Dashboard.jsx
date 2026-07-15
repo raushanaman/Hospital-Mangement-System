@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { getMyProfile } from "../../services/doctorService";
-import { getAppointments } from "../../services/appointmentService";
+import { getMyAppointments } from "../../services/appointmentService";
 
 const StatCard = ({ label, value, icon, color }) => (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
@@ -25,7 +25,7 @@ const DoctorDashboard = () => {
     useEffect(() => {
         const load = async () => {
             try {
-                const [profileRes, apptRes] = await Promise.allSettled([getMyProfile(), getAppointments()]);
+                const [profileRes, apptRes] = await Promise.allSettled([getMyProfile(), getMyAppointments()]);
                 if (profileRes.status === "fulfilled") setProfile(profileRes.value.data.data);
                 if (apptRes.status === "fulfilled") setAppointmentCount(apptRes.value.data.data?.length || 0);
             } catch (_) {}
