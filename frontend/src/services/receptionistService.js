@@ -1,7 +1,9 @@
 import axiosInstance from "./api/axios";
 
-export const getReceptionists = () => axiosInstance.get("/receptionists");
-export const getReceptionistById = (id) => axiosInstance.get(`/receptionists/${id}`);
-export const createReceptionist = (data) => axiosInstance.post("/receptionists", data);
-export const updateReceptionist = (id, data) => axiosInstance.put(`/receptionists/${id}`, data);
-export const deleteReceptionist = (id) => axiosInstance.delete(`/receptionists/${id}`);
+export const getReceptionists = () => axiosInstance.get("/receptionist");
+export const getReceptionistById = (id) => axiosInstance.get(`/receptionist/${id}`);
+export const createReceptionist = (data) => axiosInstance.post("/receptionist", data);
+export const updateReceptionist = (id, data) => axiosInstance.put(`/receptionist/${id}`, data);
+export const deleteReceptionist = (id) => axiosInstance.delete(`/receptionist/${id}`);
+export const getMyProfile = () => axiosInstance.get("/receptionist/me");
+export const updateMyProfile = (data) => axiosInstance.put("/receptionist/me", data);

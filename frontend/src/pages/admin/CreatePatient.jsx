@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../../services/authService";
+import { register, deleteUser } from "../../services/authService";
 import { createPatient } from "../../services/patientService";
-import { deleteUser } from "../../services/authService";
+import { AuthContext } from "../../context/AuthContext";
 
 const CreatePatient = () => {
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const backPath = user?.role === "receptionist" ? "/receptionist/patients" : "/patients";
+    const successPath = user?.role === "receptionist" ? "/receptionist/patients" : "/patients";
     const [formData, setFormData] = useState({
         firstName: "", lastName: "", email: "", password: "",
         phone: "", gender: "", bloodGroup: "", emergencyContact: "",
@@ -51,7 +54,7 @@ const CreatePatient = () => {
                 throw patientErr;
             }
 
-            navigate("/patients");
+            navigate(successPath);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to create patient");
         } finally {
@@ -64,7 +67,7 @@ const CreatePatient = () => {
     return (
         <div>
             <div className="mb-6">
-                <button onClick={() => navigate("/patients")} className="text-sm text-gray-500 hover:text-gray-700 mb-3 transition-colors">
+                <button onClick={() => navigate(backPath)} className="text-sm text-gray-500 hover:text-gray-700 mb-3 transition-colors">
                     ← Back to Patients
                 </button>
                 <h1 className="text-2xl font-bold text-gray-900">Create Patient</h1>

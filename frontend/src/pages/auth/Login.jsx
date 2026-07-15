@@ -19,7 +19,8 @@ const Login = () => {
             const response = await loginService({ email, password });
             const { user: userData, token } = response.data;
             login(userData, token);
-            navigate(userData.role === "doctor" ? "/doctor/dashboard" : "/dashboard");
+            const roleRedirect = { doctor: "/doctor/dashboard", receptionist: "/receptionist/dashboard", patient: "/patient/dashboard" };
+            navigate(roleRedirect[userData.role] || "/dashboard");
         } catch (err) {
             setError(err.response?.data?.message || "Invalid email or password");
         } finally {

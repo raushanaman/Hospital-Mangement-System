@@ -10,6 +10,13 @@ const adminNav = [
     { to: "/receptionists", label: "Receptionists" },
 ];
 
+const receptionistNav = [
+    { to: "/receptionist/dashboard", label: "Dashboard" },
+    { to: "/receptionist/appointments", label: "Appointments" },
+    { to: "/receptionist/patients", label: "Patients" },
+    { to: "/receptionist/profile", label: "My Profile" },
+];
+
 const doctorNav = [
     { to: "/doctor/dashboard", label: "Dashboard" },
     { to: "/doctor/appointments", label: "Appointments" },
@@ -18,7 +25,7 @@ const doctorNav = [
 
 const Sidebar = () => {
     const { user } = useContext(AuthContext);
-    const navItems = user?.role === "doctor" ? doctorNav : adminNav;
+    const navItems = user?.role === "doctor" ? doctorNav : user?.role === "receptionist" ? receptionistNav : adminNav;
 
     return (
         <aside className="w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col">
