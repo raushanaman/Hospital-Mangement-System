@@ -33,6 +33,7 @@ import ReceptionistDashboard from "../pages/receptionist/Dashboard";
 import ReceptionistAppointments from "../pages/receptionist/Appointments";
 import ReceptionistProfile from "../pages/receptionist/Profile";
 import ReceptionistPatients from "../pages/receptionist/Patients";
+import CreateAppointment from "../pages/receptionist/CreateAppointment";
 
 const AppRoutes = () => {
     return (
@@ -64,6 +65,7 @@ const AppRoutes = () => {
             }>
                 <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
                 <Route path="/receptionist/appointments" element={<ReceptionistAppointments />} />
+                <Route path="/receptionist/appointments/create" element={<CreateAppointment />} />
                 <Route path="/receptionist/patients" element={<ReceptionistPatients />} />
                 <Route path="/receptionist/patients/create" element={<CreatePatient />} />
                 <Route path="/receptionist/profile" element={<ReceptionistProfile />} />
