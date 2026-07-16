@@ -1,4 +1,5 @@
 import {body} from "express-validator";
+
 export const registerValidation = [
     body("firstName")
     .trim()
@@ -35,7 +36,20 @@ export const registerValidation = [
 
     body("role")
     .isIn(["admin", "receptionist", "doctor", "patient"])
-    .withMessage("Invalid role")
+    .withMessage("Invalid role"),
+
+    body("dateOfBirth")
+    .optional()
+    .custom((value) => {
+        const dob = new Date(value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (dob > today) {
+            throw new Error("Date of birth cannot be a future date");
+        }
+        return true;
+    })
 ]
 
 // login validation below

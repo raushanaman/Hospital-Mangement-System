@@ -7,3 +7,4 @@ export const updateReceptionist = (id, data) => axiosInstance.put(`/receptionist
 export const deleteReceptionist = (id) => axiosInstance.delete(`/receptionist/${id}`);
 export const getMyProfile = () => axiosInstance.get("/receptionist/me");
 export const updateMyProfile = (data) => axiosInstance.put("/receptionist/me", data);
+export const registerReceptionistUser = (data) => axiosInstance.post("/auth/register", data);

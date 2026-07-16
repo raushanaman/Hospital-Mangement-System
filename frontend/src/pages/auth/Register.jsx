@@ -2,28 +2,42 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register as registerService } from "../../services/authService";
 
+// max date = today (no future date), min date = 18 years ago
+const today = new Date();
+today.setHours(0, 0, 0, 0); // time remove karo taaki aaj ki date future na lage
+const maxDate = today.toISOString().split("T")[0];
+const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+
 const Register = () => {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        phone: "",
-        role: "patient",
-        gender: "",
-        dateOfBirth: "",
+        firstName: "", lastName: "", email: "", password: "",
+        phone: "", role: "patient", gender: "", dateOfBirth: "",
     });
+    const [dobError, setDobError] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === "dateOfBirth") {
+            setDobError("");
+            if (value) {
+                const selected = new Date(value);
+                selected.setHours(0, 0, 0, 0);
+                if (selected > today) {
+                    setDobError("Date of birth cannot be a future date");
+                }
+            }
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (dobError) return;
         setError("");
         setLoading(true);
         try {
@@ -63,19 +77,19 @@ const Register = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <input type="text" name="firstName" placeholder="John" value={formData.firstName} onChange={handleChange} required
+                                <input type="text" name="firstName" placeholder="Enter Your first Name" value={formData.firstName} onChange={handleChange} required
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <input type="text" name="lastName" placeholder="Doe" value={formData.lastName} onChange={handleChange} required
+                                <input type="text" name="lastName" placeholder="Enter your last name" value={formData.lastName} onChange={handleChange} required
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
                             </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" name="email" placeholder="john@example.com" value={formData.email} onChange={handleChange} required
+                            <input type="email" name="email" placeholder="abc@example.com" value={formData.email} onChange={handleChange} required
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
                         </div>
 
@@ -91,36 +105,38 @@ const Register = () => {
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                                <select name="gender" value={formData.gender} onChange={handleChange} required
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
-                                    <option value="">Select</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                                <select name="role" value={formData.role} onChange={handleChange} required
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
-                                    <option value="patient">Patient</option>
-                                    <option value="doctor">Doctor</option>
-                                    <option value="receptionist">Receptionist</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                            <select name="gender" value={formData.gender} onChange={handleChange} required
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                            <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" />
+                            <input
+                                type="date"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleChange}
+                                max={maxDate}
+                                min={minDate}
+                                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 text-sm ${
+                                    dobError
+                                        ? "border-red-400 focus:ring-red-400"
+                                        : "border-gray-200 focus:ring-indigo-500"
+                                }`}
+                            />
+                            {dobError && (
+                                <p className="text-red-500 text-xs mt-1">{dobError}</p>
+                            )}
                         </div>
 
-                        <button type="submit" disabled={loading}
+                        <button type="submit" disabled={loading || !!dobError}
                             className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-3 rounded-xl transition-colors duration-200 text-sm shadow-md mt-2">
                             {loading ? "Creating Account..." : "Create Account"}
                         </button>
@@ -128,7 +144,7 @@ const Register = () => {
 
                     <p className="text-center text-sm text-gray-500 mt-6">
                         Already have an account?{" "}
-                        <Link to="/" className="text-indigo-600 font-medium hover:underline">Sign In</Link>
+                        <Link to="/login" className="text-indigo-600 font-medium hover:underline">Sign In</Link>
                     </p>
                 </div>
             </div>

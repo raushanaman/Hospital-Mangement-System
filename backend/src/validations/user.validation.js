@@ -48,5 +48,5 @@ export const updateUserStatusValidation = [
 
    body("isActive")
    .isBoolean()
-   .withMessage("isActive must be true of false")
+   .withMessage("isActive must be true or false")
 ]

@@ -1,8 +1,100 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDoctors } from "../../services/doctorService";
 import { getPatients } from "../../services/patientService";
 import { createAppointment } from "../../services/appointmentService";
+
+// Reusable searchable dropdown component
+const SearchableSelect = ({ label, required, items, value, onSelect, displayFn, searchFn, placeholder }) => {
+    const [query, setQuery] = useState("");
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    const selected = items.find((i) => i._id === value);
+    const filtered = query
+        ? items.filter((i) => searchFn(i, query))
+        : items;
+
+    // close on outside click
+    useEffect(() => {
+        const handler = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const handleSelect = (item) => {
+        onSelect(item);
+        setQuery("");
+        setOpen(false);
+    };
+
+    const handleClear = (e) => {
+        e.stopPropagation();
+        onSelect(null);
+        setQuery("");
+    };
+
+    return (
+        <div ref={ref} className="relative">
+            <label className="text-xs font-medium text-gray-500 mb-1 block">
+                {label} {required && <span className="text-red-400">*</span>}
+            </label>
+
+            {/* Input box */}
+            <div
+                onClick={() => setOpen(true)}
+                className={`flex items-center border rounded-lg px-3 py-2.5 cursor-text bg-white text-sm transition-all ${
+                    open ? "border-indigo-400 ring-2 ring-indigo-100" : "border-gray-200"
+                }`}
+            >
+                {!open && selected ? (
+                    <span className="flex-1 text-gray-800">{displayFn(selected)}</span>
+                ) : (
+                    <input
+                        autoFocus={open}
+                        value={open ? query : ""}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder={selected ? displayFn(selected) : placeholder}
+                        className="flex-1 outline-none bg-transparent placeholder-gray-400"
+                    />
+                )}
+                {selected && (
+                    <button type="button" onClick={handleClear} className="text-gray-400 hover:text-gray-600 ml-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                )}
+                <svg className={`w-4 h-4 text-gray-400 ml-1 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </div>
+
+            {/* Dropdown */}
+            {open && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto">
+                    {filtered.length === 0 ? (
+                        <p className="text-sm text-gray-400 px-4 py-3">No results found</p>
+                    ) : (
+                        filtered.map((item) => (
+                            <div
+                                key={item._id}
+                                onMouseDown={() => handleSelect(item)}
+                                className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-indigo-50 transition-colors ${
+                                    value === item._id ? "bg-indigo-50 text-indigo-600 font-medium" : "text-gray-700"
+                                }`}
+                            >
+                                {displayFn(item)}
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const CreateAppointment = () => {
     const navigate = useNavigate();
@@ -13,13 +105,8 @@ const CreateAppointment = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
     const [form, setForm] = useState({
-        doctor: "",
-        patient: "",
-        appointmentDate: "",
-        startTime: "",
-        endTime: "",
-        reason: "",
-        consultationFee: "",
+        doctor: "", patient: "", appointmentDate: "",
+        startTime: "", endTime: "", reason: "", consultationFee: "",
     });
 
     useEffect(() => {
@@ -37,11 +124,17 @@ const CreateAppointment = () => {
         load();
     }, []);
 
-    const handleDoctorChange = (e) => {
-        const doctorId = e.target.value;
-        const doctor = doctors.find((d) => d._id === doctorId);
-        setSelectedDoctor(doctor || null);
-        setForm((prev) => ({ ...prev, doctor: doctorId, consultationFee: doctor?.consultationFee || "" }));
+    const handleDoctorSelect = (doctor) => {
+        setSelectedDoctor(doctor);
+        setForm((prev) => ({
+            ...prev,
+            doctor: doctor?._id || "",
+            consultationFee: doctor?.consultationFee || "",
+        }));
+    };
+
+    const handlePatientSelect = (patient) => {
+        setForm((prev) => ({ ...prev, patient: patient?._id || "" }));
     };
 
     const handleSubmit = async (e) => {
@@ -90,18 +183,21 @@ const CreateAppointment = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Doctor */}
-                    <div>
-                        <label className="text-xs font-medium text-gray-500 mb-1 block">Doctor <span className="text-red-400">*</span></label>
-                        <select value={form.doctor} onChange={handleDoctorChange} required className={inputClass}>
-                            <option value="">Select doctor</option>
-                            {doctors.filter((d) => d.availability).map((d) => (
-                                <option key={d._id} value={d._id}>
-                                    Dr. {d.user?.firstName} {d.user?.lastName} — {d.specialization}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+
+                    {/* Doctor searchable */}
+                    <SearchableSelect
+                        label="Doctor"
+                        required
+                        items={doctors.filter((d) => d.availability)}
+                        value={form.doctor}
+                        onSelect={handleDoctorSelect}
+                        placeholder="Search doctor by name or specialization..."
+                        displayFn={(d) => `Dr. ${d.user?.firstName} ${d.user?.lastName} — ${d.specialization}`}
+                        searchFn={(d, q) => {
+                            const name = `${d.user?.firstName} ${d.user?.lastName}`.toLowerCase();
+                            return name.includes(q.toLowerCase()) || d.specialization?.toLowerCase().includes(q.toLowerCase());
+                        }}
+                    />
 
                     {/* Doctor info hint */}
                     {selectedDoctor && (
@@ -111,18 +207,20 @@ const CreateAppointment = () => {
                         </div>
                     )}
 
-                    {/* Patient */}
-                    <div>
-                        <label className="text-xs font-medium text-gray-500 mb-1 block">Patient <span className="text-red-400">*</span></label>
-                        <select value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} required className={inputClass}>
-                            <option value="">Select patient</option>
-                            {patients.map((p) => (
-                                <option key={p._id} value={p._id}>
-                                    {p.user?.firstName} {p.user?.lastName} — {p.user?.email}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Patient searchable */}
+                    <SearchableSelect
+                        label="Patient"
+                        required
+                        items={patients}
+                        value={form.patient}
+                        onSelect={handlePatientSelect}
+                        placeholder="Search patient by name or email..."
+                        displayFn={(p) => `${p.user?.firstName} ${p.user?.lastName} — ${p.user?.email}`}
+                        searchFn={(p, q) => {
+                            const name = `${p.user?.firstName} ${p.user?.lastName}`.toLowerCase();
+                            return name.includes(q.toLowerCase()) || p.user?.email?.toLowerCase().includes(q.toLowerCase());
+                        }}
+                    />
 
                     {/* Date */}
                     <div>
@@ -166,7 +264,7 @@ const CreateAppointment = () => {
                             className={inputClass} />
                     </div>
 
-                    <button type="submit" disabled={submitting}
+                    <button type="submit" disabled={submitting || !form.doctor || !form.patient}
                         className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white font-semibold py-2.5 rounded-xl transition-colors text-sm">
                         {submitting ? "Creating..." : "Create Appointment"}
                     </button>

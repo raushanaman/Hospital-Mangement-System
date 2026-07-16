@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import LandingPage from "../pages/LandingPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 import AdminLayout from "../layouts/AdminLayout";
@@ -38,7 +39,8 @@ import CreateAppointment from "../pages/receptionist/CreateAppointment";
 const AppRoutes = () => {
     return (
         <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
             {/* Admin Routes */}

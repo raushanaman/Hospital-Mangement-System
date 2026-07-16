@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { register, deleteUser } from "../../services/authService";
 import { createPatient } from "../../services/patientService";
 import { AuthContext } from "../../context/AuthContext";
+import { maxDobDate, validateDob } from "../../utils/dobValidation";
 
 const CreatePatient = () => {
     const navigate = useNavigate();
@@ -15,12 +16,18 @@ const CreatePatient = () => {
         dateOfBirth: "", height: "", weight: "", address: "",
     });
     const [error, setError] = useState("");
+    const [dobError, setDobError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        if (name === "dateOfBirth") setDobError(validateDob(value));
+        setFormData({ ...formData, [name]: value });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (dobError) return;
         setLoading(true);
         setError("");
         try {
@@ -87,7 +94,6 @@ const CreatePatient = () => {
                             { name: "email", label: "Email", type: "email" },
                             { name: "password", label: "Password", type: "password" },
                             { name: "phone", label: "Phone", type: "text" },
-                            { name: "dateOfBirth", label: "Date of Birth", type: "date" },
                         ].map(({ name, label, type }) => (
                             <div key={name}>
                                 <label className="text-xs font-medium text-gray-500 mb-1 block">{label}</label>
@@ -95,6 +101,15 @@ const CreatePatient = () => {
                                     required className={inputClass} />
                             </div>
                         ))}
+                        <div>
+                            <label className="text-xs font-medium text-gray-500 mb-1 block">Date of Birth</label>
+                            <input type="date" name="dateOfBirth" value={formData.dateOfBirth}
+                                onChange={handleChange} max={maxDobDate} required
+                                className={`border rounded-lg p-2.5 w-full text-sm focus:outline-none focus:ring-2 ${
+                                    dobError ? "border-red-400 focus:ring-red-300" : "border-gray-200 focus:ring-indigo-300"
+                                }`} />
+                            {dobError && <p className="text-red-500 text-xs mt-1">{dobError}</p>}
+                        </div>
                     </div>
 
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-2">Medical Info</p>
