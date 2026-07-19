@@ -20,8 +20,9 @@ app.use(cors({
         const allowedOrigins = [
             "http://localhost:5173",
             process.env.FRONTEND_URL,
+            process.env.FRONTEND_URL_PREVIEW,
         ].filter(Boolean);
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
             callback(null, true);
         } else {
             callback(new Error("Not allowed by CORS"));
